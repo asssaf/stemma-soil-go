@@ -24,10 +24,6 @@ func NewReadCommand() *ReadCommand {
 
 	c.fs.IntVar(&c.addr, "address", 0, "Device address (0x36-0x39)")
 
-	// c.fs.Usage = func() {
-	// 	fmt.Fprintf(flag.CommandLine.Output(), "Usage: automationhat %s <1|2|3> <on|off>\n", c.fs.Name())
-	// }
-
 	return c
 }
 
