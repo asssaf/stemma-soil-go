@@ -55,8 +55,6 @@ func (d *Dev) Sense(values *SensorValues) error {
 		return err
 	}
 
-	time.Sleep(5 * time.Millisecond)
-
 	temp, err := d.senseTemperature()
 	if err != nil {
 		return err
@@ -69,10 +67,19 @@ func (d *Dev) Sense(values *SensorValues) error {
 }
 
 func (d *Dev) senseCapacitance() (uint16, error) {
-	read := make([]byte, 2)
-	if err := d.c.Tx([]byte{touchBase, touchChannelOffset}, read); err != nil {
+	// r/w Tx doesn't work well, need to wait 5 milliseconds between write and read
+	if err := d.c.Tx([]byte{touchBase, touchChannelOffset}, []byte{}); err != nil {
 		return 0, err
 	}
+
+	time.Sleep(5 * time.Millisecond)
+
+	read := make([]byte, 2)
+	if err := d.c.Tx([]byte{}, read); err != nil {
+		return 0, err
+	}
+
+	time.Sleep(1 * time.Millisecond)
 
 	cap := binary.BigEndian.Uint16(read)
 	if cap > 4095 {
@@ -83,10 +90,19 @@ func (d *Dev) senseCapacitance() (uint16, error) {
 }
 
 func (d *Dev) senseTemperature() (physic.Temperature, error) {
-	read := make([]byte, 4)
-	if err := d.c.Tx([]byte{statusBase, statusTemp}, read); err != nil {
+	// r/w Tx doesn't work well, need to wait 5 milliseconds between write and read
+	if err := d.c.Tx([]byte{statusBase, statusTemp}, []byte{}); err != nil {
 		return 0, err
 	}
+
+	time.Sleep(5 * time.Millisecond)
+
+	read := make([]byte, 4)
+	if err := d.c.Tx([]byte{}, read); err != nil {
+		return 0, err
+	}
+
+	time.Sleep(1 * time.Second)
 
 	read[0] = read[0] & 0x3F
 	tempRaw := binary.BigEndian.Uint32(read)
