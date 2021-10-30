@@ -102,7 +102,7 @@ func (d *Dev) senseTemperature() (physic.Temperature, error) {
 		return 0, err
 	}
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Millisecond)
 
 	read[0] = read[0] & 0x3F
 	tempRaw := binary.BigEndian.Uint32(read)
